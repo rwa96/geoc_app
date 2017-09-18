@@ -1,0 +1,13 @@
+{
+	"home": {
+		"title": "Manage puzzles",
+		"new": "Add new puzzle"
+	},
+	"details": {
+		"name": "Puzzle name:",
+		"placeholder": "Name",
+		"goals": "Goals:",
+		"upload": "Upload to device",
+		"new": "Add new goal"
+	}
+}

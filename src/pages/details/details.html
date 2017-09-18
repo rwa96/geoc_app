@@ -1,0 +1,35 @@
+<ion-header>
+	<ion-navbar color="primary">
+		<ion-title>
+			{{title}}
+		</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content padding-top>
+	<ion-list>
+		<ion-item>
+			<ion-label fixed>{{"details.name" | translate}}</ion-label>
+			<ion-input type="text" placeholder="{{'details.placeholder' | translate}}"></ion-input>
+		</ion-item>
+		<button color="secondary" ion-item text-center>
+			{{"details.upload" | translate}}
+		</button>
+		<ion-item-divider color="light">
+			<h2>
+				{{"details.goals" | translate}}
+			</h2>
+			<button (click)="deleteGoals()" ion-button clear  item-end  margin-right icon-only>
+				<ion-icon name="{{deleteMode ? 'checkmark' : 'trash'}}"></ion-icon>
+			</button>
+		</ion-item-divider>
+		<button *ngFor="let goal of goals" (click)="selectGoal(goal)" [color]="goal.selected ? 'primary' : ''" ion-item>
+			{{goal.ind + "."}}
+			<ion-icon *ngIf="deleteMode" name="{{goal.selected ? 'radio-button-on' : 'radio-button-off'}}" item-end></ion-icon>
+		</button>
+		<button [disabled]="deleteMode" (click)="createGoal()" ion-item text-center>
+			<ion-icon name="add" padding-right></ion-icon>
+			{{"details.new" | translate}}
+		</button>
+	</ion-list>
+</ion-content>

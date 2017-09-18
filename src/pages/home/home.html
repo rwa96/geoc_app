@@ -1,14 +1,25 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
-  </ion-navbar>
+	<ion-navbar color="primary">
+		<ion-title>
+			{{"home.title" | translate}}
+		</ion-title>
+		<ion-buttons end>
+			<button (click)="deletePuzzles()" ion-button icon-only>
+				<ion-icon name="{{deleteMode ? 'checkmark' : 'trash'}}"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+<ion-content padding-top>
+	<ion-list>
+		<button *ngFor="let puzzle of puzzles" (click)="selectPuzzle(puzzle)" [color]="puzzle.selected ? 'primary' : ''" ion-item>
+			{{puzzle.name}}
+			<ion-icon *ngIf="deleteMode" name="{{puzzle.selected ? 'radio-button-on' : 'radio-button-off'}}" item-end></ion-icon>
+		</button>
+		<button [disabled]="deleteMode" (click)="createPuzzle()" ion-item text-center>
+			<ion-icon name="add" padding-right></ion-icon>
+			{{"home.new" | translate}}
+		</button>
+	</ion-list>
 </ion-content>

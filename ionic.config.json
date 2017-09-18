@@ -1,5 +1,8 @@
 {
   "name": "geoc_app",
-  "app_id": "",
-  "type": "ionic-angular"
+  "app_id": "de.rwa96.geoc_app",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
 }
