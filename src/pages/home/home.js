@@ -10,10 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { AlertController } from 'ionic-angular';
 import { DetailsPage } from '../details/details';
 var HomePage = (function () {
-    function HomePage(navCtrl, translate) {
+    function HomePage(navCtrl, alertCtrl, translate) {
         this.navCtrl = navCtrl;
+        this.alertCtrl = alertCtrl;
         this.translate = translate;
         this.deleteMode = false;
         this.puzzles = [
@@ -41,6 +43,34 @@ var HomePage = (function () {
         this.deleteMode = !this.deleteMode;
     };
     HomePage.prototype.createPuzzle = function () {
+        var _this = this;
+        this.alertCtrl.create({
+            title: this.translate.instant("home.newPuzzleAlert.title"),
+            message: this.translate.instant("home.newPuzzleAlert.message"),
+            inputs: [{
+                    name: "name",
+                    placeholder: this.translate.instant("home.newPuzzleAlert.placeholder")
+                }],
+            buttons: [
+                this.translate.instant("home.newPuzzleAlert.cancel"),
+                {
+                    text: this.translate.instant("home.newPuzzleAlert.save"),
+                    handler: function (data) { return _this.createPuzzleData(data.name); }
+                }
+            ]
+        }).present();
+    };
+    HomePage.prototype.createPuzzleData = function (nm) {
+        if (this.puzzles.find(function (p) { return p.name === nm; }) === undefined) {
+            this.puzzles.push({ name: nm, selected: false });
+        }
+        else {
+            this.alertCtrl.create({
+                title: this.translate.instant("home.newPuzzleAlert.error"),
+                message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
+                buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
+            }).present();
+        }
     };
     return HomePage;
 }());
@@ -50,6 +80,7 @@ HomePage = __decorate([
         templateUrl: 'home.html'
     }),
     __metadata("design:paramtypes", [NavController,
+        AlertController,
         TranslateService])
 ], HomePage);
 export { HomePage };

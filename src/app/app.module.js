@@ -15,6 +15,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Application } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { DetailsPage } from '../pages/details/details';
+import { NewGoalModalPage } from '../pages/new-goal-modal/new-goal-modal';
 export function createTranslateLoader(http) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -28,7 +29,8 @@ AppModule = __decorate([
         declarations: [
             Application,
             HomePage,
-            DetailsPage
+            DetailsPage,
+            NewGoalModalPage
         ],
         imports: [
             HttpClientModule,
@@ -46,7 +48,8 @@ AppModule = __decorate([
         entryComponents: [
             Application,
             HomePage,
-            DetailsPage
+            DetailsPage,
+            NewGoalModalPage
         ],
         providers: [
             StatusBar,

@@ -10,7 +10,8 @@
 	<ion-list>
 		<ion-item>
 			<ion-label fixed>{{"details.name" | translate}}</ion-label>
-			<ion-input type="text" placeholder="{{'details.placeholder' | translate}}"></ion-input>
+			<ion-input [(ngModel)]="newTitle" (input)="checkNewTitle()" type="text" placeholder="{{'details.placeholder' | translate}}"></ion-input>
+			<ion-badge *ngIf="!newTitleIsValid" color="danger" item-end>{{"details.existing" | translate}}</ion-badge>
 		</ion-item>
 		<button color="secondary" ion-item text-center>
 			{{"details.upload" | translate}}

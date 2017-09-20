@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { NewGoalModalPage } from '../new-goal-modal/new-goal-modal';
 
 
 @Component({
@@ -11,16 +12,23 @@ export class DetailsPage {
 
 	private title: string;
 
-	private goals: Array<Goal>;
+	private newTitle: string;
+
+	private newTitleIsValid: boolean;
+
+	private goals: Array<GoalItem>;
 
 	private deleteMode: boolean = false;
 
 	constructor(
 		private navCtrl: NavController,
 		private navParams: NavParams,
+		private modalCtrl: ModalController,
 		private translate: TranslateService
 	){
 		this.title = navParams.get("name");
+		this.newTitle = this.title;
+		this.newTitleIsValid = true;
 
 		this.goals = new Array();
 		for(let i: number = 0; i < 10; i++){
@@ -28,21 +36,18 @@ export class DetailsPage {
 		}
 	}
 
-	private selectGoal(goal: Goal){
+	private selectGoal(goal: GoalItem){
 		if(this.deleteMode){
 			goal.selected = !goal.selected;
 		}else{
-			/*this.navCtrl.push(DetailsPage, {
-				name: puzzle.name,
-				saved: true
-			});*/
+			//TODO
 		}
 	}
 
 	private deleteGoals(){
 		if(this.deleteMode){
 			this.goals = this.goals.filter(
-				(g: Goal) => !g.selected
+				(g: GoalItem) => !g.selected
 			);
 		}
 
@@ -50,11 +55,17 @@ export class DetailsPage {
 	}
 
 	private createGoal(){
+		this.modalCtrl.create(NewGoalModalPage).present();
+	}
+
+	private checkNewTitle(){
+		//TODO
+		this.newTitleIsValid = this.newTitle != this.title;
 	}
 
 }
 
-interface Goal {
+interface GoalItem {
 	ind: number;
 	lat: number;
 	lon: number;

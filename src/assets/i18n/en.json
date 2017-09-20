@@ -1,13 +1,34 @@
 {
 	"home": {
 		"title": "Manage puzzles",
-		"new": "Add new puzzle"
+		"new": "Add new puzzle",
+		"newPuzzleAlert": {
+			"title": "Create new puzzle",
+			"message": "Please enter the name of your new puzzle",
+			"placeholder": "Puzzle name",
+			"save": "Save",
+			"cancel": "Cancel",
+			"error": "Invalid name",
+			"errorMessage": "This puzzle name already exists!",
+			"errorDismiss": "Ok"
+		}
 	},
 	"details": {
 		"name": "Puzzle name:",
 		"placeholder": "Name",
-		"goals": "Goals:",
+		"goals": "Goals",
 		"upload": "Upload to device",
-		"new": "Add new goal"
+		"new": "Add new goal",
+		"existing": "Name taken!"
+	},
+	"newGoalModal": {
+		"title": "Create new goal",
+		"invalid": "Invalid format!",
+		"save": "Save goal",
+		"lat": "Latitude",
+		"lng": "Longitude",
+		"info": "Goal data",
+		"latLngPrompt": "Location:",
+		"placeholder": "lat, lng"
 	}
 }

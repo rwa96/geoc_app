@@ -1,0 +1,33 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons start>
+			<button (click)="view.dismiss()" ion-button icon-only>
+				<ion-icon name="close"></ion-icon>
+			</button>
+		</ion-buttons>
+		<ion-title>{{"newGoalModal.title" | translate}}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+
+<ion-content padding-top>
+	<ion-list>
+		<ion-item>
+			<ion-label fixed>{{"newGoalModal.latLngPrompt" | translate}}</ion-label>
+			<ion-input [(ngModel)]="latLngField" (input)="checkCoordInput()" placeholder="{{'newGoalModal.placeholder' | translate}}" type="text"></ion-input>
+			<ion-badge *ngIf="!validGoal" color="danger" item-end>{{"newGoalModal.invalid" | translate}}</ion-badge>
+		</ion-item>
+		<ion-item-divider color="light">{{"newGoalModal.info" | translate}}</ion-item-divider>
+		<ion-item text-center>
+			<h2>{{"newGoalModal.lat" | translate}}</h2>
+			<p>{{lat}}</p>
+		</ion-item>
+		<ion-item text-center>
+			<h2>{{"newGoalModal.lng" | translate}}</h2>
+			<p>{{lng}}</p>
+		</ion-item>
+		<button (click)="saveGoal()" [disabled]="!validGoal" color="secondary" ion-item text-center>
+			{{"newGoalModal.save" | translate}}
+		</button>
+	</ion-list>
+</ion-content>

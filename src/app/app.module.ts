@@ -10,6 +10,8 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Application } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { DetailsPage } from '../pages/details/details';
+import { NewGoalModalPage } from '../pages/new-goal-modal/new-goal-modal';
+
 
 export function createTranslateLoader(http: HttpClient){
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -19,7 +21,8 @@ export function createTranslateLoader(http: HttpClient){
 	declarations: [
 		Application,
 		HomePage,
-		DetailsPage
+		DetailsPage,
+		NewGoalModalPage
 	],
 	imports: [
 		HttpClientModule,
@@ -37,7 +40,8 @@ export function createTranslateLoader(http: HttpClient){
 	entryComponents: [
 		Application,
 		HomePage,
-		DetailsPage
+		DetailsPage,
+		NewGoalModalPage
 	],
 	providers: [
 		StatusBar,

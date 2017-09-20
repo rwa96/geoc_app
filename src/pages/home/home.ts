@@ -18,6 +18,7 @@ export class HomePage{
 
 	constructor(
 		private navCtrl: NavController,
+		private alertCtrl: AlertController,
 		private translate: TranslateService
 	){
 		this.puzzles = [
@@ -50,6 +51,33 @@ export class HomePage{
 	}
 
 	private createPuzzle(){
+		this.alertCtrl.create({
+			title: this.translate.instant("home.newPuzzleAlert.title"),
+			message: this.translate.instant("home.newPuzzleAlert.message"),
+			inputs: [{
+				name: "name",
+				placeholder: this.translate.instant("home.newPuzzleAlert.placeholder")
+			}],
+			buttons: [
+				this.translate.instant("home.newPuzzleAlert.cancel"),
+				{
+					text: this.translate.instant("home.newPuzzleAlert.save"),
+					handler: data => this.createPuzzleData(data.name)
+				}
+			]
+		}).present();
+	}
+
+	private createPuzzleData(nm: string){
+		if(this.puzzles.find(p => p.name === nm) === undefined){
+			this.puzzles.push({name: nm, selected: false});
+		}else{
+			this.alertCtrl.create({
+				title: this.translate.instant("home.newPuzzleAlert.error"),
+				message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
+				buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
+			}).present();
+		}
 	}
 
 }
