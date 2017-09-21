@@ -6,11 +6,13 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { Application } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { DetailsPage } from '../pages/details/details';
 import { NewGoalModalPage } from '../pages/new-goal-modal/new-goal-modal';
+import { PuzzleStoreProvider } from '../providers/puzzle-store/puzzle-store';
 
 
 export function createTranslateLoader(http: HttpClient){
@@ -22,12 +24,13 @@ export function createTranslateLoader(http: HttpClient){
 		Application,
 		HomePage,
 		DetailsPage,
-		NewGoalModalPage
+		NewGoalModalPage,
 	],
 	imports: [
 		HttpClientModule,
 		BrowserModule,
 		IonicModule.forRoot(Application),
+		IonicStorageModule.forRoot(),
 		TranslateModule.forRoot({
 			loader: {
 				provide: TranslateLoader,
@@ -46,7 +49,8 @@ export function createTranslateLoader(http: HttpClient){
 	providers: [
 		StatusBar,
 		SplashScreen,
-		{provide: ErrorHandler, useClass: IonicErrorHandler}
+		{provide: ErrorHandler, useClass: IonicErrorHandler},
+		PuzzleStoreProvider
 	]
 })
 export class AppModule{}

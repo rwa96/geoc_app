@@ -8,44 +8,86 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Component } from '@angular/core';
-import { NavController, ViewController } from 'ionic-angular';
+import { NavParams, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 var NewGoalModalPage = NewGoalModalPage_1 = (function () {
-    function NewGoalModalPage(navCtrl, translate, view) {
-        this.navCtrl = navCtrl;
+    function NewGoalModalPage(navParams, translate, view) {
+        this.navParams = navParams;
         this.translate = translate;
         this.view = view;
+        this.latLngField = "";
+        this.passwdField = "";
+        this.validCoords = false;
+        this.validPasswd = false;
         this.validGoal = false;
+        this.goal = {
+            lat: 0,
+            lng: 0,
+            ind: -1,
+            passwd: [0, 0, 0, 0]
+        };
     }
+    NewGoalModalPage.prototype.ionicViewDidLoad = function () {
+        this.goal = this.navParams.get("goal");
+        if (this.goal !== undefined) {
+            this.validGoal = true;
+            this.validCoords = true;
+            this.validPasswd = true;
+            this.latLngField = this.goal.lat + ", " + this.goal.lng;
+            this.passwdField = this.goal.passwd.map(function (d) {
+                return NewGoalModalPage_1.hexDigits[d];
+            }).join("");
+        }
+    };
     NewGoalModalPage.prototype.checkCoordInput = function () {
         if (this.latLngField !== null) {
             var latLngMatches = this.latLngField.match(NewGoalModalPage_1.coordRegEx);
             if (latLngMatches !== null && latLngMatches.length === 2) {
-                this.lat = parseFloat(latLngMatches[0]);
-                this.lng = parseFloat(latLngMatches[1]);
-                this.validGoal = true;
+                this.goal.lat = parseFloat(latLngMatches[0]);
+                this.goal.lng = parseFloat(latLngMatches[1]);
+                this.validCoords = true;
             }
             else {
-                this.validGoal = false;
+                this.validCoords = false;
             }
         }
         else {
-            this.validGoal = false;
+            this.validCoords = false;
         }
+        this.validGoal = this.validCoords && this.validPasswd;
+    };
+    NewGoalModalPage.prototype.checkPasswdInput = function () {
+        if (this.passwdField !== null) {
+            if (this.passwdField.search(NewGoalModalPage_1.passwdRegEx) === 0) {
+                var passwdStr = this.passwdField.toLowerCase();
+                for (var pos = 0; pos < passwdStr.length; pos++) {
+                    this.goal.passwd[pos] = NewGoalModalPage_1.hexDigits.indexOf(passwdStr.charAt(pos));
+                }
+                this.validPasswd = true;
+            }
+            else {
+                this.validPasswd = false;
+            }
+        }
+        else {
+            this.validPasswd = false;
+        }
+        this.validGoal = this.validCoords && this.validPasswd;
     };
     NewGoalModalPage.prototype.saveGoal = function () {
-        //TODO
-        this.view.dismiss();
+        this.view.dismiss({ goal: this.goal });
     };
     return NewGoalModalPage;
 }());
 NewGoalModalPage.coordRegEx = /[\+\-]?(([1-9][0-9]+)|[0-9])(\.[0-9]+)?/g;
+NewGoalModalPage.passwdRegEx = /^[0-9a-f]{4}$/ig;
+NewGoalModalPage.hexDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
 NewGoalModalPage = NewGoalModalPage_1 = __decorate([
     Component({
         selector: 'page-new-goal-modal',
         templateUrl: 'new-goal-modal.html',
     }),
-    __metadata("design:paramtypes", [NavController,
+    __metadata("design:paramtypes", [NavParams,
         TranslateService,
         ViewController])
 ], NewGoalModalPage);

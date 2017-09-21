@@ -22,13 +22,16 @@
 		"existing": "Name taken!"
 	},
 	"newGoalModal": {
-		"title": "Create new goal",
+		"title": "Edit goal",
 		"invalid": "Invalid format!",
 		"save": "Save goal",
 		"lat": "Latitude",
 		"lng": "Longitude",
+		"passwd": "Password",
 		"info": "Goal data",
 		"latLngPrompt": "Location:",
-		"placeholder": "lat, lng"
+		"passwdPrompt": "Password",
+		"coordPlaceholder": "lat, lng",
+		"passwdPlaceholder": "hex-digit password"
 	}
 }

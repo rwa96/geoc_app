@@ -12,32 +12,38 @@ import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController } from 'ionic-angular';
 import { DetailsPage } from '../details/details';
+import { PuzzleStoreProvider } from '../../providers/puzzle-store/puzzle-store';
 var HomePage = (function () {
-    function HomePage(navCtrl, alertCtrl, translate) {
+    function HomePage(navCtrl, alertCtrl, translate, storage) {
         this.navCtrl = navCtrl;
         this.alertCtrl = alertCtrl;
         this.translate = translate;
+        this.storage = storage;
+        this.puzzles = [];
         this.deleteMode = false;
-        this.puzzles = [
-            "test0",
-            "test1",
-            "test2",
-            "test3"
-        ].map(function (nm) { return { name: nm, selected: false }; });
     }
+    HomePage.prototype.ionViewDidEnter = function () {
+        var _this = this;
+        this.storage.getPuzzleNames(function (names) {
+            _this.puzzles = names.map(function (nm) {
+                return { name: nm, selected: false };
+            });
+        });
+    };
     HomePage.prototype.selectPuzzle = function (puzzle) {
         if (this.deleteMode) {
             puzzle.selected = !puzzle.selected;
         }
         else {
-            this.navCtrl.push(DetailsPage, {
-                name: puzzle.name,
-                saved: true
-            });
+            this.navCtrl.push(DetailsPage, { name: puzzle.name });
         }
     };
     HomePage.prototype.deletePuzzles = function () {
         if (this.deleteMode) {
+            var removeVals = this.puzzles
+                .filter(function (p) { return p.selected; })
+                .map(function (p) { return p.name; });
+            this.storage.removePuzzles(removeVals);
             this.puzzles = this.puzzles.filter(function (p) { return !p.selected; });
         }
         this.deleteMode = !this.deleteMode;
@@ -61,15 +67,17 @@ var HomePage = (function () {
         }).present();
     };
     HomePage.prototype.createPuzzleData = function (nm) {
-        if (this.puzzles.find(function (p) { return p.name === nm; }) === undefined) {
+        var alert = this.alertCtrl.create({
+            title: this.translate.instant("home.newPuzzleAlert.error"),
+            message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
+            buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
+        });
+        if (!this.puzzles.some(function (p) { return p.name === nm; })) {
+            this.storage.setPuzzle(nm, []);
             this.puzzles.push({ name: nm, selected: false });
         }
         else {
-            this.alertCtrl.create({
-                title: this.translate.instant("home.newPuzzleAlert.error"),
-                message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
-                buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
-            }).present();
+            alert.present();
         }
     };
     return HomePage;
@@ -81,7 +89,8 @@ HomePage = __decorate([
     }),
     __metadata("design:paramtypes", [NavController,
         AlertController,
-        TranslateService])
+        TranslateService,
+        PuzzleStoreProvider])
 ], HomePage);
 export { HomePage };
 //# sourceMappingURL=home.js.map

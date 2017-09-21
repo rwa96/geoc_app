@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { NewGoalModalPage } from '../new-goal-modal/new-goal-modal';
+import { PuzzleStoreProvider , Goal } from '../../providers/puzzle-store/puzzle-store';
 
 
 @Component({
@@ -10,13 +11,17 @@ import { NewGoalModalPage } from '../new-goal-modal/new-goal-modal';
 })
 export class DetailsPage {
 
-	private title: string;
+	private title: string = "";
 
-	private newTitle: string;
+	private newTitle: string = "";
 
-	private newTitleIsValid: boolean;
+	private oldTitle: string = "";
 
-	private goals: Array<GoalItem>;
+	private newTitleIsValid: boolean = false;
+
+	private goals: Array<GoalItem> = [];
+
+	private puzzleNames: Array<string> = [];
 
 	private deleteMode: boolean = false;
 
@@ -24,23 +29,54 @@ export class DetailsPage {
 		private navCtrl: NavController,
 		private navParams: NavParams,
 		private modalCtrl: ModalController,
+		private storage: PuzzleStoreProvider,
 		private translate: TranslateService
 	){
-		this.title = navParams.get("name");
-		this.newTitle = this.title;
 		this.newTitleIsValid = true;
+	}
 
-		this.goals = new Array();
-		for(let i: number = 0; i < 10; i++){
-			this.goals.push({ind: i, lat: 0, lon: 0, passwd: [0, 1, 2, 3], selected: false, valid: false});
-		}
+	ionViewDidLoad(){
+		this.title = this.navParams.get("name");
+		this.newTitle = this.title;
+		this.oldTitle = this.title;
+	}
+
+	ionViewDidEnter(){
+		this.storage.getGoals(this.title, (goals: Array<Goal>) => {
+			this.goals = goals.map<GoalItem>((g: Goal) => {return {goal: g, selected: false};});
+		});
+		this.storage.getPuzzleNames((names: Array<string>) => this.puzzleNames = names);
+	}
+
+	ionViewDidLeave(){
+		this.storage.setPuzzle(
+			this.title,
+			this.goals.map<Goal>((gi: GoalItem) => gi.goal)
+		);
+	}
+
+	private uploadPuzzle(){
+		this.storage.setPuzzle(
+			this.title,
+			this.goals.map<Goal>((gi: GoalItem) => gi.goal)
+		);
+		//TODO
 	}
 
 	private selectGoal(goal: GoalItem){
 		if(this.deleteMode){
 			goal.selected = !goal.selected;
 		}else{
-			//TODO
+			let editModal = this.modalCtrl.create(NewGoalModalPage, {goal: goal});
+			console.log(goal);
+			editModal.onDidDismiss((data: {goal: Goal}) => {
+				if(data.goal !== undefined){
+					this.goals.find(
+						(gi: GoalItem) => gi.goal.ind === data.goal.ind
+					).goal = data.goal;
+				}
+			});
+			editModal.present();
 		}
 	}
 
@@ -49,27 +85,36 @@ export class DetailsPage {
 			this.goals = this.goals.filter(
 				(g: GoalItem) => !g.selected
 			);
+			this.goals.forEach((gi: GoalItem, i: number) => gi.goal.ind = i);
 		}
 
 		this.deleteMode = !this.deleteMode;
 	}
 
 	private createGoal(){
-		this.modalCtrl.create(NewGoalModalPage).present();
+		let createModal = this.modalCtrl.create(NewGoalModalPage, {goal: undefined});
+		console.log(createModal);
+		createModal.onDidDismiss((data: {goal: Goal}) => {
+			if(data.goal !== undefined){
+				data.goal.ind = this.goals.length;
+				this.goals.push({goal: data.goal, selected: false});
+			}
+		});
+		createModal.present();
 	}
 
 	private checkNewTitle(){
-		//TODO
-		this.newTitleIsValid = this.newTitle != this.title;
+		this.newTitleIsValid = this.newTitle === this.oldTitle ||
+			!this.puzzleNames.some((name: string) => name === this.newTitle);
+
+		if(this.newTitleIsValid){
+			this.title = this.newTitle;
+		}
 	}
 
 }
 
-interface GoalItem {
-	ind: number;
-	lat: number;
-	lon: number;
-	passwd: Array<number>;
+export interface GoalItem {
+	goal: Goal;
 	selected: boolean;
-	valid: boolean;
 }

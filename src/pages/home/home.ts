@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { AlertController } from 'ionic-angular';
+import { AlertController, Alert } from 'ionic-angular';
 
 import { DetailsPage } from '../details/details';
+import { PuzzleStoreProvider } from '../../providers/puzzle-store/puzzle-store';
 
 
 @Component({
@@ -12,36 +13,41 @@ import { DetailsPage } from '../details/details';
 })
 export class HomePage{
 
-	private puzzles: Array<PuzzleItem>;
+	private puzzles: Array<PuzzleItem> = [];
 
 	private deleteMode: boolean = false;
 
 	constructor(
 		private navCtrl: NavController,
 		private alertCtrl: AlertController,
-		private translate: TranslateService
-	){
-		this.puzzles = [
-			"test0",
-			"test1",
-			"test2",
-			"test3"
-		].map<PuzzleItem>( (nm: string) => {return {name: nm, selected: false};});
+		private translate: TranslateService,
+		private storage: PuzzleStoreProvider
+	){}
+
+	ionViewDidEnter(){
+		this.storage.getPuzzleNames((names: Array<string>) => {
+			this.puzzles = names.map<PuzzleItem>((nm: string) => {
+				return {name: nm, selected: false};
+			});
+		});
 	}
 
 	private selectPuzzle(puzzle: PuzzleItem){
 		if(this.deleteMode){
 			puzzle.selected = !puzzle.selected;
 		}else{
-			this.navCtrl.push(DetailsPage, {
-				name: puzzle.name,
-				saved: true
-			});
+			this.navCtrl.push(DetailsPage, {name: puzzle.name});
 		}
 	}
 
 	private deletePuzzles(){
 		if(this.deleteMode){
+			let removeVals: Array<string> = this.puzzles
+				.filter((p: PuzzleItem) => p.selected)
+				.map<string>((p: PuzzleItem) => p.name);
+
+			this.storage.removePuzzles(removeVals);
+
 			this.puzzles = this.puzzles.filter(
 				(p: PuzzleItem) => !p.selected
 			);
@@ -69,14 +75,17 @@ export class HomePage{
 	}
 
 	private createPuzzleData(nm: string){
-		if(this.puzzles.find(p => p.name === nm) === undefined){
+		let alert: Alert = this.alertCtrl.create({
+			title: this.translate.instant("home.newPuzzleAlert.error"),
+			message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
+			buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
+		});
+
+		if(!this.puzzles.some(p => p.name === nm)){
+			this.storage.setPuzzle(nm, []);
 			this.puzzles.push({name: nm, selected: false});
 		}else{
-			this.alertCtrl.create({
-				title: this.translate.instant("home.newPuzzleAlert.error"),
-				message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
-				buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
-			}).present();
+			alert.present();
 		}
 	}
 
