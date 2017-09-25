@@ -27,9 +27,10 @@ var NewGoalModalPage = NewGoalModalPage_1 = (function () {
             passwd: [0, 0, 0, 0]
         };
     }
-    NewGoalModalPage.prototype.ionicViewDidLoad = function () {
-        this.goal = this.navParams.get("goal");
-        if (this.goal !== undefined) {
+    NewGoalModalPage.prototype.ionViewDidLoad = function () {
+        var intent = this.navParams.data;
+        if (intent.valid) {
+            this.goal = intent.goal;
             this.validGoal = true;
             this.validCoords = true;
             this.validPasswd = true;
@@ -40,42 +41,39 @@ var NewGoalModalPage = NewGoalModalPage_1 = (function () {
         }
     };
     NewGoalModalPage.prototype.checkCoordInput = function () {
+        var checkCoords = false;
         if (this.latLngField !== null) {
             var latLngMatches = this.latLngField.match(NewGoalModalPage_1.coordRegEx);
             if (latLngMatches !== null && latLngMatches.length === 2) {
                 this.goal.lat = parseFloat(latLngMatches[0]);
                 this.goal.lng = parseFloat(latLngMatches[1]);
-                this.validCoords = true;
-            }
-            else {
-                this.validCoords = false;
+                checkCoords = true;
             }
         }
-        else {
-            this.validCoords = false;
-        }
+        this.validCoords = checkCoords;
         this.validGoal = this.validCoords && this.validPasswd;
     };
     NewGoalModalPage.prototype.checkPasswdInput = function () {
+        var checkPasswd = false;
         if (this.passwdField !== null) {
             if (this.passwdField.search(NewGoalModalPage_1.passwdRegEx) === 0) {
                 var passwdStr = this.passwdField.toLowerCase();
                 for (var pos = 0; pos < passwdStr.length; pos++) {
                     this.goal.passwd[pos] = NewGoalModalPage_1.hexDigits.indexOf(passwdStr.charAt(pos));
                 }
-                this.validPasswd = true;
-            }
-            else {
-                this.validPasswd = false;
+                checkPasswd = true;
             }
         }
-        else {
-            this.validPasswd = false;
-        }
+        this.validPasswd = checkPasswd;
         this.validGoal = this.validCoords && this.validPasswd;
     };
+    NewGoalModalPage.prototype.cancleModal = function () {
+        var intent = { valid: false };
+        this.view.dismiss(intent);
+    };
     NewGoalModalPage.prototype.saveGoal = function () {
-        this.view.dismiss({ goal: this.goal });
+        var intent = { valid: true, goal: this.goal };
+        this.view.dismiss(intent);
     };
     return NewGoalModalPage;
 }());

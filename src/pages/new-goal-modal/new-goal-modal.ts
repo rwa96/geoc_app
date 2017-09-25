@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
-import { GoalItem } from '../details/details';
+import { GoalItem , GoalIntent } from '../details/details';
 import { Goal } from '../../providers/puzzle-store/puzzle-store';
 
 
@@ -41,9 +41,10 @@ export class NewGoalModalPage {
 		private view: ViewController
 	){}
 
-	ionicViewDidLoad(){
-		this.goal = this.navParams.get("goal");
-		if(this.goal !== undefined){
+	ionViewDidLoad(){
+		const intent: GoalIntent = this.navParams.data;
+		if(intent.valid){
+			this.goal = intent.goal;
 			this.validGoal = true;
 			this.validCoords = true;
 			this.validPasswd = true;
@@ -56,43 +57,45 @@ export class NewGoalModalPage {
 	}
 
 	private checkCoordInput(){
+		let checkCoords: boolean = false;
 		if(this.latLngField !== null){
 			let latLngMatches = this.latLngField.match(NewGoalModalPage.coordRegEx);
 			if(latLngMatches !== null && latLngMatches.length === 2){
 				this.goal.lat = parseFloat(latLngMatches[0]);
 				this.goal.lng = parseFloat(latLngMatches[1]);
 
-				this.validCoords = true;
-			}else{
-				this.validCoords = false;
+				checkCoords = true;
 			}
-		}else{
-			this.validCoords = false;
 		}
 
+		this.validCoords = checkCoords
 		this.validGoal = this.validCoords && this.validPasswd;
 	}
 
 	private checkPasswdInput(){
+		let checkPasswd: boolean = false;
 		if(this.passwdField !== null){
 			if(this.passwdField.search(NewGoalModalPage.passwdRegEx) === 0){
 				let passwdStr = this.passwdField.toLowerCase();
 				for(let pos = 0; pos < passwdStr.length; pos++){
 					this.goal.passwd[pos] = NewGoalModalPage.hexDigits.indexOf(passwdStr.charAt(pos));
 				}
-				this.validPasswd = true;
-			}else{
-				this.validPasswd = false;
+				checkPasswd = true;
 			}
-		}else{
-			this.validPasswd = false;
 		}
 
+		this.validPasswd = checkPasswd;
 		this.validGoal = this.validCoords && this.validPasswd;
 	}
 
+	private cancleModal(){
+		const intent: GoalIntent = {valid: false};
+		this.view.dismiss(intent);
+	}
+
 	private saveGoal(){
-		this.view.dismiss({goal: this.goal});
+		const intent: GoalIntent = {valid: true, goal: this.goal};
+		this.view.dismiss(intent);
 	}
 
 }

@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AlertController, Alert } from 'ionic-angular';
 
 import { DetailsPage } from '../details/details';
-import { PuzzleStoreProvider } from '../../providers/puzzle-store/puzzle-store';
+import { PuzzleStoreProvider , Goal } from '../../providers/puzzle-store/puzzle-store';
 
 
 @Component({
@@ -25,11 +25,12 @@ export class HomePage{
 	){}
 
 	ionViewDidEnter(){
-		this.storage.getPuzzleNames((names: Array<string>) => {
+		const callback = (names: Array<string>) => {
 			this.puzzles = names.map<PuzzleItem>((nm: string) => {
 				return {name: nm, selected: false};
 			});
-		});
+		};
+		this.storage.getPuzzleNames(callback.bind(this));
 	}
 
 	private selectPuzzle(puzzle: PuzzleItem){
@@ -75,17 +76,15 @@ export class HomePage{
 	}
 
 	private createPuzzleData(nm: string){
-		let alert: Alert = this.alertCtrl.create({
-			title: this.translate.instant("home.newPuzzleAlert.error"),
-			message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
-			buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
-		});
-
 		if(!this.puzzles.some(p => p.name === nm)){
 			this.storage.setPuzzle(nm, []);
 			this.puzzles.push({name: nm, selected: false});
 		}else{
-			alert.present();
+			this.alertCtrl.create({
+				title: this.translate.instant("home.newPuzzleAlert.error"),
+				message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
+				buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
+			}).present();
 		}
 	}
 

@@ -9,13 +9,16 @@ export class PuzzleStoreProvider {
 	constructor(private storage: Storage){}
 
 	private storageReady(callback: () => void){
-		this.storage.ready().then(callback).catch(e => console.log("Not ready!\n", e));
+		this.storage.ready().then(callback).catch(e => console.log(e));
 	}
 
 	public getPuzzleNames(callback: (names: Array<string>) => void){
 		this.storageReady(() => {
 			this.storage.keys().then((names: Array<string>) => callback(names))
-			.catch(e => console.log("getPuzzleNames()\n", e));
+			.catch((e) => {
+				console.log(e);
+				callback([]);
+			});
 		});
 	}
 
@@ -23,7 +26,7 @@ export class PuzzleStoreProvider {
 		this.storageReady(() => {
 			names.forEach((name: string) => {
 				this.storage.remove(name)
-				.catch(e => console.log("removePuzzles(", names, ")\n", e));
+				.catch(e => console.log(e));
 			});
 		});
 	}
@@ -31,21 +34,24 @@ export class PuzzleStoreProvider {
 	public addPuzzle(name: string){
 		this.storageReady(() => {
 			this.storage.set(name, [])
-			.catch(e => console.log("addPuzzle(", name, ")\n", e));
+			.catch(e => console.log(e));
 		});
 	}
 
 	public getGoals(puzzleName: string, callback: (goals: Array<Goal>) => void){
 		this.storageReady(() => {
 			this.storage.get(puzzleName).then((goals: Array<Goal>) => callback(goals))
-			.catch(e => console.log("getGoals(", puzzleName, ")\n", e));
+			.catch((e) => {
+				console.log(e);
+				callback([]);
+			});
 		});
 	}
 
 	public setPuzzle(puzzleName: string, goals: Array<Goal>){
 		this.storageReady(() => {
 			this.storage.set(puzzleName, goals)
-			.catch(e => console.log("setPuzzle(", puzzleName, ")\n", e));
+			.catch(e => console.log(e));
 		});
 	}
 

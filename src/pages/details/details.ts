@@ -31,21 +31,23 @@ export class DetailsPage {
 		private modalCtrl: ModalController,
 		private storage: PuzzleStoreProvider,
 		private translate: TranslateService
-	){
-		this.newTitleIsValid = true;
-	}
+	){}
 
 	ionViewDidLoad(){
+		this.newTitleIsValid = true;
 		this.title = this.navParams.get("name");
 		this.newTitle = this.title;
 		this.oldTitle = this.title;
 	}
 
 	ionViewDidEnter(){
-		this.storage.getGoals(this.title, (goals: Array<Goal>) => {
+		const goalsCallback = (goals: Array<Goal>) => {
 			this.goals = goals.map<GoalItem>((g: Goal) => {return {goal: g, selected: false};});
-		});
-		this.storage.getPuzzleNames((names: Array<string>) => this.puzzleNames = names);
+		};
+		this.storage.getGoals(this.title, goalsCallback.bind(this));
+
+		const puzzleNamesCallback = (names: Array<string>) => this.puzzleNames = names;
+		this.storage.getPuzzleNames(puzzleNamesCallback.bind(this));
 	}
 
 	ionViewDidLeave(){
@@ -63,19 +65,21 @@ export class DetailsPage {
 		//TODO
 	}
 
-	private selectGoal(goal: GoalItem){
+	private selectGoal(goalItem: GoalItem){
 		if(this.deleteMode){
-			goal.selected = !goal.selected;
+			goalItem.selected = !goalItem.selected;
 		}else{
-			let editModal = this.modalCtrl.create(NewGoalModalPage, {goal: goal});
-			console.log(goal);
-			editModal.onDidDismiss((data: {goal: Goal}) => {
-				if(data.goal !== undefined){
+			const intent: GoalIntent = {valid: true, goal: goalItem.goal};
+			const callback = (data: GoalIntent) => {
+				if(data.valid){
 					this.goals.find(
 						(gi: GoalItem) => gi.goal.ind === data.goal.ind
 					).goal = data.goal;
 				}
-			});
+			};
+
+			const editModal = this.modalCtrl.create(NewGoalModalPage, intent);
+			editModal.onDidDismiss(callback.bind(this));
 			editModal.present();
 		}
 	}
@@ -92,14 +96,17 @@ export class DetailsPage {
 	}
 
 	private createGoal(){
-		let createModal = this.modalCtrl.create(NewGoalModalPage, {goal: undefined});
-		console.log(createModal);
-		createModal.onDidDismiss((data: {goal: Goal}) => {
-			if(data.goal !== undefined){
+		const intent: GoalIntent = {valid: false};
+		const callback = (data: GoalIntent) => {
+			if(data.valid){
 				data.goal.ind = this.goals.length;
-				this.goals.push({goal: data.goal, selected: false});
+				const item: GoalItem = {goal: data.goal, selected:false};
+				this.goals.push(item);
 			}
-		});
+		};
+
+		const createModal = this.modalCtrl.create(NewGoalModalPage, intent);
+		createModal.onDidDismiss(callback.bind(this));
 		createModal.present();
 	}
 
@@ -117,4 +124,9 @@ export class DetailsPage {
 export interface GoalItem {
 	goal: Goal;
 	selected: boolean;
+}
+
+export interface GoalIntent {
+	valid: boolean;
+	goal?: Goal;
 }

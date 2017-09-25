@@ -24,11 +24,12 @@ var HomePage = (function () {
     }
     HomePage.prototype.ionViewDidEnter = function () {
         var _this = this;
-        this.storage.getPuzzleNames(function (names) {
+        var callback = function (names) {
             _this.puzzles = names.map(function (nm) {
                 return { name: nm, selected: false };
             });
-        });
+        };
+        this.storage.getPuzzleNames(callback.bind(this));
     };
     HomePage.prototype.selectPuzzle = function (puzzle) {
         if (this.deleteMode) {
@@ -67,17 +68,16 @@ var HomePage = (function () {
         }).present();
     };
     HomePage.prototype.createPuzzleData = function (nm) {
-        var alert = this.alertCtrl.create({
-            title: this.translate.instant("home.newPuzzleAlert.error"),
-            message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
-            buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
-        });
         if (!this.puzzles.some(function (p) { return p.name === nm; })) {
             this.storage.setPuzzle(nm, []);
             this.puzzles.push({ name: nm, selected: false });
         }
         else {
-            alert.present();
+            this.alertCtrl.create({
+                title: this.translate.instant("home.newPuzzleAlert.error"),
+                message: this.translate.instant("home.newPuzzleAlert.errorMessage"),
+                buttons: [this.translate.instant("home.newPuzzleAlert.errorDismiss")]
+            }).present();
         }
     };
     return HomePage;

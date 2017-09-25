@@ -26,19 +26,21 @@ var DetailsPage = (function () {
         this.goals = [];
         this.puzzleNames = [];
         this.deleteMode = false;
-        this.newTitleIsValid = true;
     }
     DetailsPage.prototype.ionViewDidLoad = function () {
+        this.newTitleIsValid = true;
         this.title = this.navParams.get("name");
         this.newTitle = this.title;
         this.oldTitle = this.title;
     };
     DetailsPage.prototype.ionViewDidEnter = function () {
         var _this = this;
-        this.storage.getGoals(this.title, function (goals) {
+        var goalsCallback = function (goals) {
             _this.goals = goals.map(function (g) { return { goal: g, selected: false }; });
-        });
-        this.storage.getPuzzleNames(function (names) { return _this.puzzleNames = names; });
+        };
+        this.storage.getGoals(this.title, goalsCallback.bind(this));
+        var puzzleNamesCallback = function (names) { return _this.puzzleNames = names; };
+        this.storage.getPuzzleNames(puzzleNamesCallback.bind(this));
     };
     DetailsPage.prototype.ionViewDidLeave = function () {
         this.storage.setPuzzle(this.title, this.goals.map(function (gi) { return gi.goal; }));
@@ -47,19 +49,20 @@ var DetailsPage = (function () {
         this.storage.setPuzzle(this.title, this.goals.map(function (gi) { return gi.goal; }));
         //TODO
     };
-    DetailsPage.prototype.selectGoal = function (goal) {
+    DetailsPage.prototype.selectGoal = function (goalItem) {
         var _this = this;
         if (this.deleteMode) {
-            goal.selected = !goal.selected;
+            goalItem.selected = !goalItem.selected;
         }
         else {
-            var editModal = this.modalCtrl.create(NewGoalModalPage, { goal: goal });
-            console.log(goal);
-            editModal.onDidDismiss(function (data) {
-                if (data.goal !== undefined) {
+            var intent = { valid: true, goal: goalItem.goal };
+            var callback = function (data) {
+                if (data.valid) {
                     _this.goals.find(function (gi) { return gi.goal.ind === data.goal.ind; }).goal = data.goal;
                 }
-            });
+            };
+            var editModal = this.modalCtrl.create(NewGoalModalPage, intent);
+            editModal.onDidDismiss(callback.bind(this));
             editModal.present();
         }
     };
@@ -72,14 +75,16 @@ var DetailsPage = (function () {
     };
     DetailsPage.prototype.createGoal = function () {
         var _this = this;
-        var createModal = this.modalCtrl.create(NewGoalModalPage, { goal: undefined });
-        console.log(createModal);
-        createModal.onDidDismiss(function (data) {
-            if (data.goal !== undefined) {
+        var intent = { valid: false };
+        var callback = function (data) {
+            if (data.valid) {
                 data.goal.ind = _this.goals.length;
-                _this.goals.push({ goal: data.goal, selected: false });
+                var item = { goal: data.goal, selected: false };
+                _this.goals.push(item);
             }
-        });
+        };
+        var createModal = this.modalCtrl.create(NewGoalModalPage, intent);
+        createModal.onDidDismiss(callback.bind(this));
         createModal.present();
     };
     DetailsPage.prototype.checkNewTitle = function () {

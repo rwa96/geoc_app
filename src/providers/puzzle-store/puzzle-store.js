@@ -15,13 +15,16 @@ var PuzzleStoreProvider = (function () {
         this.storage = storage;
     }
     PuzzleStoreProvider.prototype.storageReady = function (callback) {
-        this.storage.ready().then(callback).catch(function (e) { return console.log("Not ready!\n", e); });
+        this.storage.ready().then(callback).catch(function (e) { return console.log(e); });
     };
     PuzzleStoreProvider.prototype.getPuzzleNames = function (callback) {
         var _this = this;
         this.storageReady(function () {
             _this.storage.keys().then(function (names) { return callback(names); })
-                .catch(function (e) { return console.log("getPuzzleNames()\n", e); });
+                .catch(function (e) {
+                console.log(e);
+                callback([]);
+            });
         });
     };
     PuzzleStoreProvider.prototype.removePuzzles = function (names) {
@@ -29,7 +32,7 @@ var PuzzleStoreProvider = (function () {
         this.storageReady(function () {
             names.forEach(function (name) {
                 _this.storage.remove(name)
-                    .catch(function (e) { return console.log("removePuzzles(", names, ")\n", e); });
+                    .catch(function (e) { return console.log(e); });
             });
         });
     };
@@ -37,21 +40,24 @@ var PuzzleStoreProvider = (function () {
         var _this = this;
         this.storageReady(function () {
             _this.storage.set(name, [])
-                .catch(function (e) { return console.log("addPuzzle(", name, ")\n", e); });
+                .catch(function (e) { return console.log(e); });
         });
     };
     PuzzleStoreProvider.prototype.getGoals = function (puzzleName, callback) {
         var _this = this;
         this.storageReady(function () {
             _this.storage.get(puzzleName).then(function (goals) { return callback(goals); })
-                .catch(function (e) { return console.log("getGoals(", puzzleName, ")\n", e); });
+                .catch(function (e) {
+                console.log(e);
+                callback([]);
+            });
         });
     };
     PuzzleStoreProvider.prototype.setPuzzle = function (puzzleName, goals) {
         var _this = this;
         this.storageReady(function () {
             _this.storage.set(puzzleName, goals)
-                .catch(function (e) { return console.log("setPuzzle(", puzzleName, ")\n", e); });
+                .catch(function (e) { return console.log(e); });
         });
     };
     return PuzzleStoreProvider;

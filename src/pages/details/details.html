@@ -13,7 +13,7 @@
 			<ion-input [(ngModel)]="newTitle" (input)="checkNewTitle()" type="text" placeholder="{{'details.placeholder' | translate}}"></ion-input>
 			<ion-badge *ngIf="!newTitleIsValid" color="danger" item-end>{{"details.existing" | translate}}</ion-badge>
 		</ion-item>
-		<button (click)="uploadPuzzle()" color="secondary" ion-item text-center>
+		<button [disabled]="goals.lentgh > 0" (click)="uploadPuzzle()" color="secondary" ion-item text-center>
 			{{"details.upload" | translate}}
 		</button>
 		<ion-item-divider color="light">
@@ -25,7 +25,8 @@
 			</button>
 		</ion-item-divider>
 		<button *ngFor="let goalItem of goals" (click)="selectGoal(goalItem)" [color]="goalItem.selected ? 'primary' : ''" ion-item>
-			{{goal.ind + "."}}
+			<ion-icon name="pin"></ion-icon>
+			{{goalItem.goal.lat}}, {{goalItem.goal.lng}}
 			<ion-icon *ngIf="deleteMode" name="{{goalItem.selected ? 'radio-button-on' : 'radio-button-off'}}" item-end></ion-icon>
 		</button>
 		<button [disabled]="deleteMode" (click)="createGoal()" ion-item text-center>

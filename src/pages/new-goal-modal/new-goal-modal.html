@@ -1,7 +1,7 @@
 <ion-header>
 	<ion-toolbar>
 		<ion-buttons start>
-			<button (click)="view.dismiss({goal: undefined})" ion-button icon-only>
+			<button (click)="cancleModal()" ion-button icon-only>
 				<ion-icon name="close"></ion-icon>
 			</button>
 		</ion-buttons>
@@ -33,7 +33,7 @@
 		</ion-item>
 		<ion-item text-center>
 			<h2>{{"newGoalModal.passwd" | translate}}</h2>
-			<p>{{goal.passwd.join(", ")}}</p>
+			<p>{{goal.passwd.join(" ")}}</p>
 		</ion-item>
 		<button (click)="saveGoal()" [disabled]="!validGoal" color="secondary" ion-item text-center>
 			{{"newGoalModal.save" | translate}}
