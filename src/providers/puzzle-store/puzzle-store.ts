@@ -6,55 +6,60 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class PuzzleStoreProvider {
 
-	constructor(private storage: Storage){}
+	private static puzzles: Array<Puzzle> = [];
 
-	private storageReady(callback: () => void){
-		this.storage.ready().then(callback).catch(e => console.log(e));
+	constructor(private storage: Storage){
+		this.storage.ready().then(() => {
+			this.storage.get("puzzles").then((ps: Array<Puzzle>) => {
+				PuzzleStoreProvider.puzzles = ps;
+			}).catch(e => console.log(e));
+		}).catch(e => console.log(e));
 	}
 
-	public getPuzzleNames(callback: (names: Array<string>) => void){
-		this.storageReady(() => {
-			this.storage.keys().then((names: Array<string>) => callback(names))
-			.catch((e) => {
-				console.log(e);
-				callback([]);
-			});
-		});
+	public getPuzzleNames(): Array<string>{
+		return PuzzleStoreProvider.puzzles.map<string>((p: Puzzle) => p.name);
 	}
 
 	public removePuzzles(names: Array<string>){
-		this.storageReady(() => {
-			names.forEach((name: string) => {
-				this.storage.remove(name)
-				.catch(e => console.log(e));
-			});
-		});
+		PuzzleStoreProvider.puzzles = PuzzleStoreProvider.puzzles
+			.filter((p: Puzzle) => !names.some((n: string) => n === p.name));
 	}
 
 	public addPuzzle(name: string){
-		this.storageReady(() => {
-			this.storage.set(name, [])
+		PuzzleStoreProvider.puzzles.push({
+			name: name,
+			goals: []
+		});
+	}
+
+	public getGoals(puzzleName: string): Array<Goal>{
+		const puzzle: Puzzle = PuzzleStoreProvider.puzzles
+			.find((p: Puzzle) => p.name === puzzleName);
+		return puzzle === undefined ? [] : puzzle.goals;
+	}
+
+	public setPuzzle(oldName: string, puzzle: Puzzle){
+		const oldPuzzle: number = PuzzleStoreProvider.puzzles
+			.findIndex((p: Puzzle) => p.name === oldName);
+		if(oldPuzzle !== -1){
+			PuzzleStoreProvider.puzzles.splice(oldPuzzle, 1, puzzle);
+		}else{
+			PuzzleStoreProvider.puzzles.push(puzzle);
+		}
+	}
+
+	public saveAll(){
+		this.storage.ready().then(() => {
+			this.storage.set("puzzles", PuzzleStoreProvider.puzzles)
 			.catch(e => console.log(e));
-		});
+		}).catch(e => console.log(e));
 	}
 
-	public getGoals(puzzleName: string, callback: (goals: Array<Goal>) => void){
-		this.storageReady(() => {
-			this.storage.get(puzzleName).then((goals: Array<Goal>) => callback(goals))
-			.catch((e) => {
-				console.log(e);
-				callback([]);
-			});
-		});
-	}
+}
 
-	public setPuzzle(puzzleName: string, goals: Array<Goal>){
-		this.storageReady(() => {
-			this.storage.set(puzzleName, goals)
-			.catch(e => console.log(e));
-		});
-	}
-
+export interface Puzzle{
+	name: string;
+	goals: Array<Goal>;
 }
 
 export interface Goal{

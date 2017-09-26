@@ -23,13 +23,12 @@ var HomePage = (function () {
         this.deleteMode = false;
     }
     HomePage.prototype.ionViewDidEnter = function () {
-        var _this = this;
-        var callback = function (names) {
-            _this.puzzles = names.map(function (nm) {
-                return { name: nm, selected: false };
-            });
-        };
-        this.storage.getPuzzleNames(callback.bind(this));
+        this.puzzles = this.storage.getPuzzleNames().map(function (nm) {
+            return { name: nm, selected: false };
+        });
+    };
+    HomePage.prototype.ionViewWillUnload = function () {
+        this.storage.saveAll();
     };
     HomePage.prototype.selectPuzzle = function (puzzle) {
         if (this.deleteMode) {
@@ -69,7 +68,7 @@ var HomePage = (function () {
     };
     HomePage.prototype.createPuzzleData = function (nm) {
         if (!this.puzzles.some(function (p) { return p.name === nm; })) {
-            this.storage.setPuzzle(nm, []);
+            this.storage.setPuzzle(nm, { name: nm, goals: [] });
             this.puzzles.push({ name: nm, selected: false });
         }
         else {

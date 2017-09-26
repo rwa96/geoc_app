@@ -10,61 +10,58 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/map';
-var PuzzleStoreProvider = (function () {
+var PuzzleStoreProvider = PuzzleStoreProvider_1 = (function () {
     function PuzzleStoreProvider(storage) {
-        this.storage = storage;
-    }
-    PuzzleStoreProvider.prototype.storageReady = function (callback) {
-        this.storage.ready().then(callback).catch(function (e) { return console.log(e); });
-    };
-    PuzzleStoreProvider.prototype.getPuzzleNames = function (callback) {
         var _this = this;
-        this.storageReady(function () {
-            _this.storage.keys().then(function (names) { return callback(names); })
-                .catch(function (e) {
-                console.log(e);
-                callback([]);
-            });
-        });
+        this.storage = storage;
+        this.storage.ready().then(function () {
+            _this.storage.get("puzzles").then(function (ps) {
+                PuzzleStoreProvider_1.puzzles = ps;
+            }).catch(function (e) { return console.log(e); });
+        }).catch(function (e) { return console.log(e); });
+    }
+    PuzzleStoreProvider.prototype.getPuzzleNames = function () {
+        return PuzzleStoreProvider_1.puzzles.map(function (p) { return p.name; });
     };
     PuzzleStoreProvider.prototype.removePuzzles = function (names) {
-        var _this = this;
-        this.storageReady(function () {
-            names.forEach(function (name) {
-                _this.storage.remove(name)
-                    .catch(function (e) { return console.log(e); });
-            });
-        });
+        PuzzleStoreProvider_1.puzzles = PuzzleStoreProvider_1.puzzles
+            .filter(function (p) { return !names.some(function (n) { return n === p.name; }); });
     };
     PuzzleStoreProvider.prototype.addPuzzle = function (name) {
-        var _this = this;
-        this.storageReady(function () {
-            _this.storage.set(name, [])
-                .catch(function (e) { return console.log(e); });
+        PuzzleStoreProvider_1.puzzles.push({
+            name: name,
+            goals: []
         });
     };
-    PuzzleStoreProvider.prototype.getGoals = function (puzzleName, callback) {
-        var _this = this;
-        this.storageReady(function () {
-            _this.storage.get(puzzleName).then(function (goals) { return callback(goals); })
-                .catch(function (e) {
-                console.log(e);
-                callback([]);
-            });
-        });
+    PuzzleStoreProvider.prototype.getGoals = function (puzzleName) {
+        var puzzle = PuzzleStoreProvider_1.puzzles
+            .find(function (p) { return p.name === puzzleName; });
+        return puzzle === undefined ? [] : puzzle.goals;
     };
-    PuzzleStoreProvider.prototype.setPuzzle = function (puzzleName, goals) {
+    PuzzleStoreProvider.prototype.setPuzzle = function (oldName, puzzle) {
+        var oldPuzzle = PuzzleStoreProvider_1.puzzles
+            .findIndex(function (p) { return p.name === oldName; });
+        if (oldPuzzle !== -1) {
+            PuzzleStoreProvider_1.puzzles.splice(oldPuzzle, 1, puzzle);
+        }
+        else {
+            PuzzleStoreProvider_1.puzzles.push(puzzle);
+        }
+    };
+    PuzzleStoreProvider.prototype.saveAll = function () {
         var _this = this;
-        this.storageReady(function () {
-            _this.storage.set(puzzleName, goals)
+        this.storage.ready().then(function () {
+            _this.storage.set("puzzles", PuzzleStoreProvider_1.puzzles)
                 .catch(function (e) { return console.log(e); });
-        });
+        }).catch(function (e) { return console.log(e); });
     };
     return PuzzleStoreProvider;
 }());
-PuzzleStoreProvider = __decorate([
+PuzzleStoreProvider.puzzles = [];
+PuzzleStoreProvider = PuzzleStoreProvider_1 = __decorate([
     Injectable(),
     __metadata("design:paramtypes", [Storage])
 ], PuzzleStoreProvider);
 export { PuzzleStoreProvider };
+var PuzzleStoreProvider_1;
 //# sourceMappingURL=puzzle-store.js.map

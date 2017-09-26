@@ -40,28 +40,21 @@ export class DetailsPage {
 		this.oldTitle = this.title;
 	}
 
-	ionViewDidEnter(){
-		const goalsCallback = (goals: Array<Goal>) => {
-			this.goals = goals.map<GoalItem>((g: Goal) => {return {goal: g, selected: false};});
-		};
-		this.storage.getGoals(this.title, goalsCallback.bind(this));
-
-		const puzzleNamesCallback = (names: Array<string>) => this.puzzleNames = names;
-		this.storage.getPuzzleNames(puzzleNamesCallback.bind(this));
+	ionViewWillEnter(){
+		this.goals = this.storage.getGoals(this.title)
+			.map<GoalItem>((g: Goal) => {return {goal: g, selected: false}});
+		this.puzzleNames = this.storage.getPuzzleNames();
 	}
 
-	ionViewDidLeave(){
-		this.storage.setPuzzle(
-			this.title,
-			this.goals.map<Goal>((gi: GoalItem) => gi.goal)
-		);
+	ionViewWillLeave(){
+		this.storage.setPuzzle(this.oldTitle, {
+			name: this.title,
+			goals: this.goals.map<Goal>(gi => gi.goal)
+		});
 	}
 
 	private uploadPuzzle(){
-		this.storage.setPuzzle(
-			this.title,
-			this.goals.map<Goal>((gi: GoalItem) => gi.goal)
-		);
+		console.log(JSON.stringify(this.goals));
 		//TODO
 	}
 

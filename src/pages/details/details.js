@@ -33,20 +33,19 @@ var DetailsPage = (function () {
         this.newTitle = this.title;
         this.oldTitle = this.title;
     };
-    DetailsPage.prototype.ionViewDidEnter = function () {
-        var _this = this;
-        var goalsCallback = function (goals) {
-            _this.goals = goals.map(function (g) { return { goal: g, selected: false }; });
-        };
-        this.storage.getGoals(this.title, goalsCallback.bind(this));
-        var puzzleNamesCallback = function (names) { return _this.puzzleNames = names; };
-        this.storage.getPuzzleNames(puzzleNamesCallback.bind(this));
+    DetailsPage.prototype.ionViewWillEnter = function () {
+        this.goals = this.storage.getGoals(this.title)
+            .map(function (g) { return { goal: g, selected: false }; });
+        this.puzzleNames = this.storage.getPuzzleNames();
     };
-    DetailsPage.prototype.ionViewDidLeave = function () {
-        this.storage.setPuzzle(this.title, this.goals.map(function (gi) { return gi.goal; }));
+    DetailsPage.prototype.ionViewWillLeave = function () {
+        this.storage.setPuzzle(this.oldTitle, {
+            name: this.title,
+            goals: this.goals.map(function (gi) { return gi.goal; })
+        });
     };
     DetailsPage.prototype.uploadPuzzle = function () {
-        this.storage.setPuzzle(this.title, this.goals.map(function (gi) { return gi.goal; }));
+        console.log(JSON.stringify(this.goals));
         //TODO
     };
     DetailsPage.prototype.selectGoal = function (goalItem) {

@@ -5,9 +5,11 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { TranslateService } from '@ngx-translate/core';
 
 import { HomePage } from '../pages/home/home';
+import { PuzzleStoreProvider } from '../providers/puzzle-store/puzzle-store';
 
 @Component({
-	templateUrl: 'app.html'
+	templateUrl: 'app.html',
+	providers: [PuzzleStoreProvider]
 })
 export class Application{
 
@@ -28,5 +30,5 @@ export class Application{
 
 		this.translate.setDefaultLang(this.defaultLang);
 	}
-	
+
 }

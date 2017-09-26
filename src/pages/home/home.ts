@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AlertController, Alert } from 'ionic-angular';
 
 import { DetailsPage } from '../details/details';
-import { PuzzleStoreProvider , Goal } from '../../providers/puzzle-store/puzzle-store';
+import { PuzzleStoreProvider , Goal, Puzzle } from '../../providers/puzzle-store/puzzle-store';
 
 
 @Component({
@@ -25,12 +25,13 @@ export class HomePage{
 	){}
 
 	ionViewDidEnter(){
-		const callback = (names: Array<string>) => {
-			this.puzzles = names.map<PuzzleItem>((nm: string) => {
-				return {name: nm, selected: false};
-			});
-		};
-		this.storage.getPuzzleNames(callback.bind(this));
+		this.puzzles = this.storage.getPuzzleNames().map<PuzzleItem>((nm: string) => {
+			return {name: nm, selected: false};
+		});
+	}
+
+	ionViewWillUnload(){
+		this.storage.saveAll();
 	}
 
 	private selectPuzzle(puzzle: PuzzleItem){
@@ -77,7 +78,7 @@ export class HomePage{
 
 	private createPuzzleData(nm: string){
 		if(!this.puzzles.some(p => p.name === nm)){
-			this.storage.setPuzzle(nm, []);
+			this.storage.setPuzzle(nm, {name: nm, goals: []});
 			this.puzzles.push({name: nm, selected: false});
 		}else{
 			this.alertCtrl.create({
