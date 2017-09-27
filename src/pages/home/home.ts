@@ -30,7 +30,7 @@ export class HomePage{
 		});
 	}
 
-	ionViewWillUnload(){
+	ionViewWillLeave(){
 		this.storage.saveAll();
 	}
 

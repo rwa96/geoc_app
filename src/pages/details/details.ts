@@ -51,6 +51,7 @@ export class DetailsPage {
 			name: this.title,
 			goals: this.goals.map<Goal>(gi => gi.goal)
 		});
+		this.storage.saveAll();
 	}
 
 	private uploadPuzzle(){

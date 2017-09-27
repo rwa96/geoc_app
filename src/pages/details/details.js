@@ -43,6 +43,7 @@ var DetailsPage = (function () {
             name: this.title,
             goals: this.goals.map(function (gi) { return gi.goal; })
         });
+        this.storage.saveAll();
     };
     DetailsPage.prototype.uploadPuzzle = function () {
         console.log(JSON.stringify(this.goals));

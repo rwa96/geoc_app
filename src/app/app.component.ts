@@ -21,7 +21,8 @@ export class Application{
 		private platform: Platform,
 		private statusBar: StatusBar,
 		private splashScreen: SplashScreen,
-		private translate: TranslateService
+		private translate: TranslateService,
+		private storage: PuzzleStoreProvider
 	){
 		platform.ready().then(() => {
 			statusBar.styleDefault();
@@ -29,6 +30,14 @@ export class Application{
 		});
 
 		this.translate.setDefaultLang(this.defaultLang);
+	}
+
+	ngOnInit(){
+		this.storage.loadAll();
+	}
+
+	ngOnDestroy(){
+		this.storage.saveAll();
 	}
 
 }

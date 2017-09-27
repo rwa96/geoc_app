@@ -15,11 +15,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { HomePage } from '../pages/home/home';
 import { PuzzleStoreProvider } from '../providers/puzzle-store/puzzle-store';
 var Application = (function () {
-    function Application(platform, statusBar, splashScreen, translate) {
+    function Application(platform, statusBar, splashScreen, translate, storage) {
         this.platform = platform;
         this.statusBar = statusBar;
         this.splashScreen = splashScreen;
         this.translate = translate;
+        this.storage = storage;
         this.rootPage = HomePage;
         this.defaultLang = "en";
         platform.ready().then(function () {
@@ -28,6 +29,12 @@ var Application = (function () {
         });
         this.translate.setDefaultLang(this.defaultLang);
     }
+    Application.prototype.ngOnInit = function () {
+        this.storage.loadAll();
+    };
+    Application.prototype.ngOnDestroy = function () {
+        this.storage.saveAll();
+    };
     return Application;
 }());
 Application = __decorate([
@@ -38,7 +45,8 @@ Application = __decorate([
     __metadata("design:paramtypes", [Platform,
         StatusBar,
         SplashScreen,
-        TranslateService])
+        TranslateService,
+        PuzzleStoreProvider])
 ], Application);
 export { Application };
 //# sourceMappingURL=app.component.js.map

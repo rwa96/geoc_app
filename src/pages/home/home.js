@@ -27,7 +27,7 @@ var HomePage = (function () {
             return { name: nm, selected: false };
         });
     };
-    HomePage.prototype.ionViewWillUnload = function () {
+    HomePage.prototype.ionViewWillLeave = function () {
         this.storage.saveAll();
     };
     HomePage.prototype.selectPuzzle = function (puzzle) {
