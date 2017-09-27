@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
-import { GoalItem , GoalIntent } from '../details/details';
+import { GoalIntent } from '../details/details';
 import { Goal } from '../../providers/puzzle-store/puzzle-store';
 
 

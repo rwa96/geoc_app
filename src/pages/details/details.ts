@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { NavParams, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { NewGoalModalPage } from '../new-goal-modal/new-goal-modal';
 import { PuzzleStoreProvider , Goal } from '../../providers/puzzle-store/puzzle-store';
@@ -26,7 +26,6 @@ export class DetailsPage {
 	private deleteMode: boolean = false;
 
 	constructor(
-		private navCtrl: NavController,
 		private navParams: NavParams,
 		private modalCtrl: ModalController,
 		private storage: PuzzleStoreProvider,

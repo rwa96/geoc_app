@@ -8,13 +8,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController } from 'ionic-angular';
+import { NavParams, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { NewGoalModalPage } from '../new-goal-modal/new-goal-modal';
 import { PuzzleStoreProvider } from '../../providers/puzzle-store/puzzle-store';
 var DetailsPage = (function () {
-    function DetailsPage(navCtrl, navParams, modalCtrl, storage, translate) {
-        this.navCtrl = navCtrl;
+    function DetailsPage(navParams, modalCtrl, storage, translate) {
         this.navParams = navParams;
         this.modalCtrl = modalCtrl;
         this.storage = storage;
@@ -102,8 +101,7 @@ DetailsPage = __decorate([
         selector: 'page-details',
         templateUrl: 'details.html',
     }),
-    __metadata("design:paramtypes", [NavController,
-        NavParams,
+    __metadata("design:paramtypes", [NavParams,
         ModalController,
         PuzzleStoreProvider,
         TranslateService])

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
-import { AlertController, Alert } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 
 import { DetailsPage } from '../details/details';
-import { PuzzleStoreProvider , Goal, Puzzle } from '../../providers/puzzle-store/puzzle-store';
+import { PuzzleStoreProvider } from '../../providers/puzzle-store/puzzle-store';
 
 
 @Component({
